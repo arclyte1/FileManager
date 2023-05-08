@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">FileManager</string>
+    <plurals name="element">
+        <item quantity="zero">%1$d elements</item>
+        <item quantity="one">%1$d element</item>
+        <item quantity="two">%1$d elements</item>
+        <item quantity="few">%1$d elements</item>
+        <item quantity="many">%1$d elements</item>
+        <item quantity="other">%1$d elements</item>
+    </plurals>
+</resources>
