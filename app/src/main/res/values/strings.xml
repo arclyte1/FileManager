@@ -8,4 +8,8 @@
         <item quantity="many">%1$d elements</item>
         <item quantity="other">%1$d elements</item>
     </plurals>
+    <string name="name">Name</string>
+    <string name="size">Size</string>
+    <string name="date">Date</string>
+    <string name="extension">Extension</string>
 </resources>

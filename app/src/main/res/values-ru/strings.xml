@@ -6,4 +6,8 @@
         <item quantity="many">%1$d элементов</item>
         <item quantity="other">%1$d элемент(-ов)</item>
     </plurals>
+    <string name="name">Название</string>
+    <string name="size">Размер</string>
+    <string name="date">Дата</string>
+    <string name="extension">Расширение</string>
 </resources>
