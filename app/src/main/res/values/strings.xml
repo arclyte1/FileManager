@@ -12,4 +12,9 @@
     <string name="size">Size</string>
     <string name="date">Date</string>
     <string name="extension">Extension</string>
+    <string name="details">Details</string>
+    <string name="contains">Contains</string>
+    <string name="path">Path</string>
+    <string name="recent_files">Recent files</string>
+    <string name="last_modified_files_will_appear">Here will appear your last modified files</string>
 </resources>

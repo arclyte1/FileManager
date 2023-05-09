@@ -1,4 +1,4 @@
-package com.example.filemanager.presentation.screen.file_browser
+package com.example.filemanager.presentation.shared.element_list_item
 
 
 sealed class BaseListElement(

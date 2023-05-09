@@ -10,4 +10,9 @@
     <string name="size">Размер</string>
     <string name="date">Дата</string>
     <string name="extension">Расширение</string>
+    <string name="details">Подробности</string>
+    <string name="contains">Содержит</string>
+    <string name="path">Путь</string>
+    <string name="recent_files">Недавние файлы</string>
+    <string name="last_modified_files_will_appear">Здесь будут появляться Ваши недавно измененные файлы</string>
 </resources>

@@ -1,14 +1,15 @@
 package com.example.filemanager.presentation.screen.file_browser
 
 import android.os.Environment
-import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.filemanager.R
 import com.example.filemanager.domain.model.BaseElement
 import com.example.filemanager.domain.usecase.GetElementsUseCase
+import com.example.filemanager.presentation.shared.element_details.BaseElementDetails
+import com.example.filemanager.presentation.shared.element_details.ElementDetailsFormatter
+import com.example.filemanager.presentation.shared.element_list_item.BaseListElement
+import com.example.filemanager.presentation.shared.element_list_item.ListElementFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,9 @@ class FileBrowserViewModel @Inject constructor(
     private val getElementsUseCase: GetElementsUseCase
 ) : ViewModel() {
 
-    private val elementFormatter = ListElementFormatter()
+    private val listElementFormatter = ListElementFormatter()
+    private val detailsElementFormatter = ElementDetailsFormatter()
+
     private val updateScrollPositionEventsBackStack = LinkedList<Event.UpdateScrollPosition>()
 
     private val basePath = Environment.getExternalStorageDirectory().path
@@ -38,6 +41,9 @@ class FileBrowserViewModel @Inject constructor(
 
     private val _sortingOrder = MutableStateFlow(SortingOrder.ASC)
     val sortingOrder: StateFlow<SortingOrder> = _sortingOrder
+
+    private val _elementDetails = MutableStateFlow<BaseElementDetails?>(null)
+    val elementDetails: StateFlow<BaseElementDetails?> = _elementDetails
 
     val event = MutableStateFlow<Event>(Event.Clean)
 
@@ -75,13 +81,19 @@ class FileBrowserViewModel @Inject constructor(
         updateElementsList()
     }
 
+    fun setElementDetails(name: String) {
+        _listElements.value.find { it.name == name }?.let { element ->
+            _elementDetails.value = detailsElementFormatter.format(element, basePath)
+        }
+    }
+
     private fun updateElementsList(
         updateScrollPositionEvent: Event.UpdateScrollPosition = Event.UpdateScrollPosition(0, 0)
     ) {
         viewModelScope.launch(Dispatchers.Default) {
             _listElements.value = getElementsUseCase(basePath + _path.value)
             sortElementList()
-            _formattedListElements.value = _listElements.value.map { elementFormatter.format(it) }
+            _formattedListElements.value = _listElements.value.map { listElementFormatter.format(it) }
             event.value = updateScrollPositionEvent
         }
     }

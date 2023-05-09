@@ -1,4 +1,4 @@
-package com.example.filemanager.presentation.screen.file_browser.components
+package com.example.filemanager.presentation.shared.element_list_item
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -15,7 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.filemanager.R
-import com.example.filemanager.presentation.screen.file_browser.BaseListElement
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -65,7 +64,11 @@ fun ElementListItem(
                     }
                     is BaseListElement.DirectoryListElement -> {
                         Text(
-                            text = pluralStringResource(id = R.plurals.element, count = element.elementsCount, element.elementsCount),
+                            text = pluralStringResource(
+                                id = R.plurals.element,
+                                count = element.elementsCount,
+                                element.elementsCount
+                            ),
                             style = style
                         )
                         Text(

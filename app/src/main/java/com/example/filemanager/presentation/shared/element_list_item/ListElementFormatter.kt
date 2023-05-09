@@ -1,11 +1,10 @@
-package com.example.filemanager.presentation.screen.file_browser
+package com.example.filemanager.presentation.shared.element_list_item
 
 import android.os.Build
 import com.example.filemanager.R
 import com.example.filemanager.domain.model.BaseElement
+import com.example.filemanager.presentation.shared.element_list_item.BaseListElement
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -26,7 +25,7 @@ class ListElementFormatter {
                 iconId = getFileIcon(element.extension),
                 name = element.name,
                 dateModified = dateString,
-                size = element.size.toString()
+                size = bytesToHumanReadableSize(element.size.toDouble())
             )
             is BaseElement.DirectoryElement -> BaseListElement.DirectoryListElement(
                 iconId = getDirectoryIcon(),
@@ -35,6 +34,13 @@ class ListElementFormatter {
                 elementsCount = element.elementsCount
             )
         }
+    }
+
+    private fun bytesToHumanReadableSize(bytes: Double) = when {
+        bytes >= 1 shl 30 -> "%.1f GB".format(bytes / (1 shl 30))
+        bytes >= 1 shl 20 -> "%.1f MB".format(bytes / (1 shl 20))
+        bytes >= 1 shl 10 -> "%.0f kB".format(bytes / (1 shl 10))
+        else -> "$bytes bytes"
     }
 
     private fun getFileIcon(extension: String): Int {
