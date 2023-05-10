@@ -6,5 +6,5 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "file")
 data class FileEntity(
     @PrimaryKey val path: String,
-    val hash: Int,
+    val hash: String,
 )
