@@ -16,4 +16,5 @@
     <string name="recent_files">Недавние файлы</string>
     <string name="last_modified_files_will_appear">Здесь будут появляться Ваши недавно измененные файлы</string>
     <string name="phone_storage">Память телефона</string>
+    <string name="permissions_needed">Приложение не может работать без разрешения на чтение файлов. Пожалуйста выдайте разрешение в настройках</string>
 </resources>

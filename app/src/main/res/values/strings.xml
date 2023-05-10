@@ -18,4 +18,5 @@
     <string name="recent_files">Recent files</string>
     <string name="last_modified_files_will_appear">Here will appear your last modified files</string>
     <string name="phone_storage">Phone storage</string>
+    <string name="permissions_needed">This app can\'t work without file storage read permission. Please grant it in settings</string>
 </resources>
