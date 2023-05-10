@@ -2,7 +2,6 @@ package com.example.filemanager.presentation.shared.element_details
 
 import android.os.Build
 import com.example.filemanager.domain.model.BaseElement
-import com.example.filemanager.presentation.shared.element_list_item.BaseListElement
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -26,12 +25,14 @@ class ElementDetailsFormatter {
 
         return when (element) {
             is BaseElement.FileElement -> BaseElementDetails.FileElementDetails(
+                uri = element.uri,
                 path = basePathToAdd + element.path.removePrefix(basePathToRemove),
                 name = element.name,
                 dateModified = dateString,
                 size = bytesToHumanReadableSize(element.size.toDouble())
             )
             is BaseElement.DirectoryElement -> BaseElementDetails.DirectoryElementDetails(
+                uri = element.uri,
                 path = basePathToAdd + element.path.removePrefix(basePathToRemove),
                 name = element.name,
                 dateModified = dateString,

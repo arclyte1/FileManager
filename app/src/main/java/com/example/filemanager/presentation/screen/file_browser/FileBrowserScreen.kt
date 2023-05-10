@@ -1,5 +1,6 @@
 package com.example.filemanager.presentation.screen.file_browser
 
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 )
 @Composable
 fun FileBrowserScreen(
+    shareFile: (Uri) -> Unit,
     viewModel: FileBrowserViewModel = hiltViewModel()
 ) {
     val listState = rememberLazyListState()
@@ -62,6 +64,7 @@ fun FileBrowserScreen(
             if (elementDetails != null) {
                 ElementDetails(
                     element = elementDetails!!,
+                    shareFile = shareFile,
                     modifier = Modifier.padding(
                         top = 32.dp,
                         start = 24.dp,

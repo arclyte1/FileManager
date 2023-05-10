@@ -162,7 +162,6 @@ class FileBrowserViewModel @Inject constructor(
         class UpdateScrollPosition(val itemPos: Int, val offset: Int) : Event()
     }
 
-
     enum class SortingOrder {
         ASC, DESC;
         operator fun unaryMinus(): SortingOrder {

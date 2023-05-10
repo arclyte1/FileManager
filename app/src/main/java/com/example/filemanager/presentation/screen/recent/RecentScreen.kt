@@ -1,5 +1,6 @@
 package com.example.filemanager.presentation.screen.recent
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 )
 @Composable
 fun RecentScreen(
+    shareFile: (Uri) -> Unit,
     viewModel: RecentViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
@@ -45,6 +47,7 @@ fun RecentScreen(
             if (elementDetails != null) {
                 ElementDetails(
                     element = elementDetails!!,
+                    shareFile = shareFile,
                     modifier = Modifier.padding(
                         top = 32.dp,
                         start = 24.dp,

@@ -1,5 +1,6 @@
 package com.example.filemanager.presentation
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -10,13 +11,16 @@ import com.example.filemanager.presentation.navigation.BottomNav
 import com.example.filemanager.presentation.navigation.BottomNavGraph
 
 @Composable
-fun AppHost() {
+fun AppHost(
+    shareFile: (Uri) -> Unit
+) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNav(navController = navController) }
     ) { paddingValues ->
         BottomNavGraph(
             navController = navController,
+            shareFile = shareFile,
             modifier = Modifier.padding(paddingValues)
         )
     }

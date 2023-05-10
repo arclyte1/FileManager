@@ -1,5 +1,6 @@
 package com.example.filemanager.presentation.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import com.example.filemanager.presentation.screen.recent.RecentScreen
 @Composable
 fun BottomNavGraph(
     navController: NavHostController,
+    shareFile: (Uri) -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -22,10 +24,14 @@ fun BottomNavGraph(
         modifier = modifier
     ) {
         composable(BottomNavItem.FileBrowser.screen_route) {
-            FileBrowserScreen()
+            FileBrowserScreen(
+                shareFile = shareFile
+            )
         }
         composable(BottomNavItem.Recent.screen_route) {
-            RecentScreen()
+            RecentScreen(
+                shareFile = shareFile
+            )
         }
     }
 }

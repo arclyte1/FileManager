@@ -1,8 +1,14 @@
 package com.example.filemanager.presentation.shared.element_details
 
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -19,16 +25,27 @@ import com.example.filemanager.R
 @Composable
 fun ElementDetails(
     element: BaseElementDetails,
+    shareFile: (Uri) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        Text(
-            text = stringResource(id = R.string.details),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Row {
+            Text(
+                text = stringResource(id = R.string.details),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = "Share",
+                modifier = Modifier.clickable {
+                    shareFile(element.uri)
+                }.padding(4.dp)
+            )
+        }
         ElementDetailsRow(
             title = stringResource(id = R.string.name),
             content = element.name
@@ -86,11 +103,13 @@ fun ElementDetailsRow(
 fun PreviewFileElementDetails() {
     ElementDetails(
         BaseElementDetails.FileElementDetails(
+            uri = Uri.EMPTY,
             path = "Downloads/test.jpg",
             name = "test.jpg",
             dateModified = "20 Apr 2023 10:20:54",
             size = "2 MB"
         ),
+        {},
         modifier = Modifier.padding(top = 32.dp, start = 24.dp, end = 24.dp, bottom = 16.dp)
     )
 }
