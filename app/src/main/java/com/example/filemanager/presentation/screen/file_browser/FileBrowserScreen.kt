@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.filemanager.presentation.screen.file_browser.components.SelectedVolume
 import com.example.filemanager.presentation.shared.element_list_item.ElementListItem
 import com.example.filemanager.presentation.screen.file_browser.components.SortingFilter
 import com.example.filemanager.presentation.shared.element_details.ElementDetails
@@ -39,6 +40,8 @@ fun FileBrowserScreen(
     val sortBy by viewModel.sortBy.collectAsState()
     val sortingOrder by viewModel.sortingOrder.collectAsState()
     val elementDetails by viewModel.elementDetails.collectAsState()
+    val volumesList by viewModel.formattedVolumesList.collectAsState()
+    val selectedVolume by viewModel.selectedVolume.collectAsState()
 
     LaunchedEffect(event) {
         if (event is FileBrowserViewModel.Event.UpdateScrollPosition) {
@@ -73,13 +76,22 @@ fun FileBrowserScreen(
     ) {
         Column {
             Row(modifier = Modifier
-                .align(Alignment.End)
-                .padding(8.dp)) {
+                .fillMaxWidth()
+                .padding(16.dp)) {
+
+
+                SelectedVolume(
+                    volumesList = volumesList,
+                    selectedVolume = selectedVolume,
+                    selectVolume = viewModel::selectVolume,
+                    modifier = Modifier.weight(1f)
+                )
+
                 SortingFilter(
                     sortBy = sortBy,
                     sortingOrder = sortingOrder,
                     setSortBy = viewModel::setSortBy,
-                    setSortingOrder = viewModel::setSortingOrder
+                    setSortingOrder = viewModel::setSortingOrder,
                 )
             }
 

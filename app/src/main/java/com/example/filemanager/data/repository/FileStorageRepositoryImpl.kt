@@ -1,6 +1,7 @@
 package com.example.filemanager.data.repository
 
 import android.os.Environment
+import android.os.storage.StorageManager
 import android.util.Log
 import com.example.filemanager.common.Resource
 import com.example.filemanager.common.toBaseElement
@@ -19,7 +20,8 @@ import java.security.MessageDigest
 import java.util.*
 
 class FileStorageRepositoryImpl(
-    private val fileDb: FileDb
+    private val fileDb: FileDb,
+    private val storageManager: StorageManager,
 ) : FileStorageRepository {
 
     private val updatedOrNewFiles: MutableStateFlow<Resource<List<BaseElement.FileElement>>> =
@@ -39,26 +41,33 @@ class FileStorageRepositoryImpl(
     private fun gatherUpdatedOrNewFiles(collectInList: Boolean = true): List<File> {
         val updatedOrNewFiles = mutableListOf<File>()
 
-        Environment.getExternalStorageDirectory().walkTopDown().forEach { file ->
-            val fileEntity = fileDb.fileDao().getByPath(file.path)
-            if (file.isFile) {
-                try {
+        storageManager.storageVolumes.forEach { storageVolume ->
+            val rootDirectoryPath = if (storageVolume.uuid == null)
+                "/storage/emulated/0"
+            else
+                "/storage/${storageVolume.uuid}"
 
-                    val checksum = generateChecksum(file)
-                    Log.d("Generated checksum", file.path + " " + checksum)
-                    if (fileEntity == null || checksum != fileEntity.hash) {
-                        fileDb.fileDao().upsert(
-                            FileEntity(
-                                path = file.path,
-                                hash = checksum
+            File(rootDirectoryPath).walkTopDown().forEach { file ->
+                val fileEntity = fileDb.fileDao().getByPath(file.path)
+                if (file.isFile) {
+                    try {
+
+                        val checksum = generateChecksum(file)
+                        Log.d("Generated checksum", file.path + " " + checksum)
+                        if (fileEntity == null || checksum != fileEntity.hash) {
+                            fileDb.fileDao().upsert(
+                                FileEntity(
+                                    path = file.path,
+                                    hash = checksum
+                                )
                             )
-                        )
 
-                        if (collectInList)
-                            updatedOrNewFiles.add(file)
+                            if (collectInList)
+                                updatedOrNewFiles.add(file)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
         }
@@ -67,9 +76,9 @@ class FileStorageRepositoryImpl(
     }
 
     private fun generateChecksum(file: File): String {
-        val md = MessageDigest.getInstance("SHA-256") // You can choose a different algorithm if needed, such as MD5 or SHA-1
+        val md = MessageDigest.getInstance("SHA-256")
         val fis = FileInputStream(file)
-        val buffer = ByteArray(8192) // Buffer size for reading file chunks
+        val buffer = ByteArray(8192)
         var bytesRead = fis.read(buffer)
 
         while (bytesRead != -1) {
@@ -80,7 +89,6 @@ class FileStorageRepositoryImpl(
         fis.close()
         val digest = md.digest()
 
-        // Convert the byte array to a hexadecimal string
         val hexString = StringBuilder()
         for (i in digest.indices) {
             val hex = Integer.toHexString(0xFF and digest[i].toInt())

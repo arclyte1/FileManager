@@ -1,6 +1,7 @@
 package com.example.filemanager.di
 
 import android.content.Context
+import android.os.storage.StorageManager
 import androidx.room.Room
 import com.example.filemanager.data.local.FileDb
 import com.example.filemanager.data.repository.FileStorageRepositoryImpl
@@ -19,9 +20,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideFileStorageRepository(
-        fileDb: FileDb
+        fileDb: FileDb,
+        storageManager: StorageManager
     ) : FileStorageRepository {
-        return FileStorageRepositoryImpl(fileDb)
+        return FileStorageRepositoryImpl(fileDb, storageManager)
     }
 
     @Provides
@@ -30,5 +32,13 @@ object AppModule {
         @ApplicationContext context: Context
     ) : FileDb {
         return Room.databaseBuilder(context, FileDb::class.java, "file_db").build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideStorageManager(
+        @ApplicationContext context: Context
+    ): StorageManager {
+        return context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
     }
 }

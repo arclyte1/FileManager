@@ -1,5 +1,6 @@
 package com.example.filemanager.presentation.screen.file_browser.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +29,7 @@ fun SortingFilter(
 
     Row(modifier = modifier) {
         OutlinedButton(
+            border = null,
             contentPadding = PaddingValues(horizontal = 8.dp),
             onClick = {
                 expandedSortByMenu = true
@@ -35,7 +38,8 @@ fun SortingFilter(
         ) {
             Text(
                 text = stringResource(id = sortBy.titleResourceId),
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                color = Color.Black
             )
         }
         DropdownMenu(
@@ -54,6 +58,7 @@ fun SortingFilter(
         }
         val scaleY = if (sortingOrder == FileBrowserViewModel.SortingOrder.ASC) -1f else 1f
         OutlinedButton(
+            border = null,
             contentPadding = PaddingValues(0.dp),
             onClick = { setSortingOrder(-sortingOrder) },
             modifier = Modifier
@@ -63,7 +68,7 @@ fun SortingFilter(
             Icon(
                 imageVector = Icons.Default.Sort,
                 contentDescription = "Sorting order",
-                tint = MaterialTheme.colors.primary,
+                tint = Color.Black,
                 modifier = Modifier
                     .scale(1f, scaleY)
             )

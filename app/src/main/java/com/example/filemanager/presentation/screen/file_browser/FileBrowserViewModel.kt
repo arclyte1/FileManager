@@ -1,6 +1,8 @@
 package com.example.filemanager.presentation.screen.file_browser
 
-import android.os.Environment
+import android.os.storage.StorageManager
+import android.os.storage.StorageVolume
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.filemanager.R
@@ -20,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FileBrowserViewModel @Inject constructor(
-    private val getElementsUseCase: GetElementsUseCase
+    private val getElementsUseCase: GetElementsUseCase,
+    private val storageManager: StorageManager
 ) : ViewModel() {
 
     private val listElementFormatter = ListElementFormatter()
@@ -28,7 +31,23 @@ class FileBrowserViewModel @Inject constructor(
 
     private val updateScrollPositionEventsBackStack = LinkedList<Event.UpdateScrollPosition>()
 
-    private val basePath = Environment.getExternalStorageDirectory().path
+    private val _volumesList = MutableStateFlow<List<StorageVolume>>(storageManager.storageVolumes)
+    private val _formattedVolumesList = MutableStateFlow<List<StorageVolumeListItem>>(
+        _volumesList.value.map {
+            StorageVolumeListItem(
+                title = if (it.uuid == null) null else it.toString().removePrefix("StorageVolume: "),
+                uuid = it.uuid
+            )
+        }
+    )
+    val formattedVolumesList: StateFlow<List<StorageVolumeListItem>> = _formattedVolumesList
+
+    private val _selectedVolume = MutableStateFlow(
+        _formattedVolumesList.value.find { it.uuid == null } ?: _formattedVolumesList.value[0]
+    )
+    val selectedVolume: StateFlow<StorageVolumeListItem> = _selectedVolume
+
+    private lateinit var basePath: String
     private val _path = MutableStateFlow("")
     val path: StateFlow<String> = _path
 
@@ -48,7 +67,7 @@ class FileBrowserViewModel @Inject constructor(
     val event = MutableStateFlow<Event>(Event.Clean)
 
     init {
-        updateElementsList()
+        selectVolume(null)
     }
 
     fun navigateUp() {
@@ -85,6 +104,14 @@ class FileBrowserViewModel @Inject constructor(
         _listElements.value.find { it.name == name }?.let { element ->
             _elementDetails.value = detailsElementFormatter.format(element, basePath)
         }
+    }
+
+    fun selectVolume(uuid: String?) {
+        basePath = if (uuid == null) "/storage/emulated/0" else "/storage/$uuid"
+        _selectedVolume.value = _formattedVolumesList.value.find { it.uuid == uuid } ?: _formattedVolumesList.value[0]
+        Log.d("ViewModel", _selectedVolume.value.title.toString())
+        updateScrollPositionEventsBackStack.clear()
+        updateElementsList()
     }
 
     private fun updateElementsList(
