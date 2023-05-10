@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FileManager</string>
+    <string name="app_name">File Manager</string>
     <plurals name="element">
         <item quantity="one">%1$d элемент</item>
         <item quantity="few">%1$d элемента</item>
@@ -18,4 +18,5 @@
     <string name="phone_storage">Память телефона</string>
     <string name="permissions_needed">Приложение не может работать без разрешения на чтение файлов. Пожалуйста выдайте разрешение в настройках</string>
     <string name="open_settings">Открыть настройки</string>
+    <string name="no_files">Нет файлов</string>
 </resources>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FileManager</string>
+    <string name="app_name">File Manager</string>
     <plurals name="element">
         <item quantity="zero">%1$d elements</item>
         <item quantity="one">%1$d element</item>
@@ -20,4 +20,5 @@
     <string name="phone_storage">Phone storage</string>
     <string name="permissions_needed">This app can\'t work without file storage read permission. Please grant it in settings</string>
     <string name="open_settings">Open settings</string>
+    <string name="no_files">No files</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.example.filemanager.presentation.screen.file_browser.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height

@@ -1,7 +1,5 @@
 package com.example.filemanager.presentation.screen.recent
 
-import android.os.Environment
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.filemanager.common.Resource
@@ -25,8 +23,6 @@ class RecentViewModel @Inject constructor(
 
     private val listElementFormatter = ListElementFormatter()
     private val detailsElementFormatter = ElementDetailsFormatter()
-
-    private val basePath = Environment.getExternalStorageDirectory().path
 
     private val _filesList = MutableStateFlow<List<BaseElement.FileElement>>(emptyList())
     private val _formattedFilesList = MutableStateFlow<List<BaseListElement.FileListElement>>(emptyList())
@@ -67,7 +63,7 @@ class RecentViewModel @Inject constructor(
 
     fun setElementDetails(name: String) {
         _filesList.value.find { it.name == name }?.let { element ->
-            _elementDetails.value = detailsElementFormatter.format(element, basePath)
+            _elementDetails.value = detailsElementFormatter.format(element)
         }
     }
 }

@@ -74,12 +74,15 @@ class FileBrowserViewModel @Inject constructor(
     }
 
     fun navigateUp() {
-        _path.value = _path.value.substringBeforeLast("/")
-        if (updateScrollPositionEventsBackStack.isNotEmpty()) {
-            val event = updateScrollPositionEventsBackStack.removeLast()
-            updateElementsList(event)
-        } else {
-            updateElementsList()
+        val newPath = _path.value.substringBeforeLast("/")
+        if (newPath != _path.value) {
+            _path.value = newPath
+            if (updateScrollPositionEventsBackStack.isNotEmpty()) {
+                val event = updateScrollPositionEventsBackStack.removeLast()
+                updateElementsList(event)
+            } else {
+                updateElementsList()
+            }
         }
     }
 
@@ -105,7 +108,11 @@ class FileBrowserViewModel @Inject constructor(
 
     fun setElementDetails(name: String) {
         _listElements.value.find { it.name == name }?.let { element ->
-            _elementDetails.value = detailsElementFormatter.format(element, basePath)
+            _elementDetails.value = detailsElementFormatter.format(
+                element,
+                basePath,
+                _selectedVolume.value.title ?: "Phone storage"
+            )
         }
     }
 

@@ -1,7 +1,7 @@
 package com.example.filemanager.presentation.screen.recent
 
 import android.net.Uri
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.filemanager.R
-import com.example.filemanager.presentation.shared.element_details.BaseElementDetails
 import com.example.filemanager.presentation.shared.element_details.ElementDetails
 import com.example.filemanager.presentation.shared.element_list_item.ElementListItem
 import kotlinx.coroutines.launch
@@ -42,7 +41,11 @@ fun RecentScreen(
     val fileList by viewModel.formattedFilesList.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val elementDetails by viewModel.elementDetails.collectAsState()
-    Log.d("Recent", fileList.joinToString(" ") { it.name })
+
+    BackHandler {
+        if (bottomSheetState.isVisible)
+            scope.launch { bottomSheetState.hide() }
+    }
 
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
@@ -50,6 +53,7 @@ fun RecentScreen(
             if (elementDetails != null) {
                 ElementDetails(
                     element = elementDetails!!,
+                    sharingFileEnabled = true,
                     shareFile = shareFile,
                     modifier = Modifier.padding(
                         top = 32.dp,
@@ -82,17 +86,19 @@ fun RecentScreen(
                     items(fileList) { file ->
                         ElementListItem(
                             element = file,
-                            modifier = Modifier.combinedClickable(
-                                onClick = {
-                                    openFile((elementDetails as BaseElementDetails.FileElementDetails).uri)
-                                },
-                                onLongClick = {
-                                    scope.launch {
-                                        viewModel.setElementDetails(file.name)
-                                        bottomSheetState.show()
+                            modifier = Modifier
+                                .combinedClickable(
+                                    onClick = {
+                                        openFile(file.uri)
+                                    },
+                                    onLongClick = {
+                                        scope.launch {
+                                            viewModel.setElementDetails(file.name)
+                                            bottomSheetState.show()
+                                        }
                                     }
-                                }
-                            ).padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)
+                                )
+                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)
                         )
                     }
                 }

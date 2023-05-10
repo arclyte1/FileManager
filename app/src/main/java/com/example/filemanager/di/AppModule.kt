@@ -1,6 +1,7 @@
 package com.example.filemanager.di
 
 import android.content.Context
+import android.net.Uri
 import android.os.storage.StorageManager
 import androidx.core.content.FileProvider
 import androidx.room.Room
@@ -28,7 +29,12 @@ object AppModule {
     ) : FileStorageRepository {
         return FileStorageRepositoryImpl(
             fileUriProvider = { file: File ->
-                FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+                try {
+                    FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Uri.EMPTY
+                }
             },
             fileDb = fileDb,
             storageManager = storageManager
