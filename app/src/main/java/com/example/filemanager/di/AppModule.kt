@@ -2,6 +2,7 @@ package com.example.filemanager.di
 
 import android.content.Context
 import android.os.storage.StorageManager
+import androidx.core.content.FileProvider
 import androidx.room.Room
 import com.example.filemanager.data.local.FileDb
 import com.example.filemanager.data.repository.FileStorageRepositoryImpl
@@ -11,6 +12,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.io.File
 import javax.inject.Singleton
 
 @Module
@@ -20,10 +22,17 @@ object AppModule {
     @Provides
     @Singleton
     fun provideFileStorageRepository(
+        @ApplicationContext context: Context,
         fileDb: FileDb,
         storageManager: StorageManager
     ) : FileStorageRepository {
-        return FileStorageRepositoryImpl(fileDb, storageManager)
+        return FileStorageRepositoryImpl(
+            fileUriProvider = { file: File ->
+                FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+            },
+            fileDb = fileDb,
+            storageManager = storageManager
+        )
     }
 
     @Provides

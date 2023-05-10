@@ -13,7 +13,8 @@ import com.example.filemanager.presentation.screen.no_permissions.NoPermissionsS
 @Composable
 fun AppHost(
     permissionsGranted: Boolean,
-    shareFile: (Uri) -> Unit
+    shareFile: (Uri) -> Unit,
+    openFile: (Uri) -> Unit
 ) {
     if (permissionsGranted) {
         val navController = rememberNavController()
@@ -23,6 +24,7 @@ fun AppHost(
             BottomNavGraph(
                 navController = navController,
                 shareFile = shareFile,
+                openFile = openFile,
                 modifier = Modifier.padding(paddingValues)
             )
         }

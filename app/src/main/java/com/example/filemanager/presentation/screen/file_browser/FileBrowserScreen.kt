@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.filemanager.presentation.screen.file_browser.components.SelectedVolume
 import com.example.filemanager.presentation.shared.element_list_item.ElementListItem
 import com.example.filemanager.presentation.screen.file_browser.components.SortingFilter
+import com.example.filemanager.presentation.shared.element_details.BaseElementDetails
 import com.example.filemanager.presentation.shared.element_details.ElementDetails
 import com.example.filemanager.presentation.shared.element_list_item.BaseListElement
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FileBrowserScreen(
     shareFile: (Uri) -> Unit,
+    openFile: (Uri) -> Unit,
     viewModel: FileBrowserViewModel = hiltViewModel()
 ) {
     val listState = rememberLazyListState()
@@ -64,13 +66,14 @@ fun FileBrowserScreen(
             if (elementDetails != null) {
                 ElementDetails(
                     element = elementDetails!!,
-                    shareFile = shareFile,
                     modifier = Modifier.padding(
                         top = 32.dp,
                         start = 24.dp,
                         end = 24.dp,
                         bottom = 16.dp
-                    )
+                    ),
+                    sharingFileEnabled = elementDetails is BaseElementDetails.FileElementDetails,
+                    shareFile = shareFile
                 )
             }
             Divider()
@@ -103,15 +106,20 @@ fun FileBrowserScreen(
                     ElementListItem(element, modifier = Modifier
                         .combinedClickable(
                             onClick = {
-                                if (element is BaseListElement.DirectoryListElement)
-                                    viewModel.navigateDirectory(
-                                        element.name,
-                                        listState.firstVisibleItemIndex,
-                                        listState.firstVisibleItemScrollOffset
-                                    )
+                                when (element) {
+                                    is BaseListElement.DirectoryListElement -> {
+                                        viewModel.navigateDirectory(
+                                            element.name,
+                                            listState.firstVisibleItemIndex,
+                                            listState.firstVisibleItemScrollOffset
+                                        )
+                                    }
+                                    is BaseListElement.FileListElement -> {
+                                        openFile(element.uri)
+                                    }
+                                }
                             },
                             onLongClick = {
-                                Log.d("FileBrowserScreen", "Long click")
                                 scope.launch {
                                     viewModel.setElementDetails(element.name)
                                     bottomSheetState.show()

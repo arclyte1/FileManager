@@ -25,8 +25,9 @@ import com.example.filemanager.R
 @Composable
 fun ElementDetails(
     element: BaseElementDetails,
-    shareFile: (Uri) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    sharingFileEnabled: Boolean = false,
+    shareFile: (Uri) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -38,13 +39,14 @@ fun ElementDetails(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)
             )
-            Icon(
-                imageVector = Icons.Default.Share,
-                contentDescription = "Share",
-                modifier = Modifier.clickable {
-                    shareFile(element.uri)
-                }.padding(4.dp)
-            )
+            if (sharingFileEnabled)
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share",
+                    modifier = Modifier.clickable {
+                        shareFile((element as BaseElementDetails.FileElementDetails).uri)
+                    }.padding(4.dp)
+                )
         }
         ElementDetailsRow(
             title = stringResource(id = R.string.name),
@@ -109,7 +111,8 @@ fun PreviewFileElementDetails() {
             dateModified = "20 Apr 2023 10:20:54",
             size = "2 MB"
         ),
-        {},
-        modifier = Modifier.padding(top = 32.dp, start = 24.dp, end = 24.dp, bottom = 16.dp)
+        modifier = Modifier.padding(top = 32.dp, start = 24.dp, end = 24.dp, bottom = 16.dp),
+        sharingFileEnabled = true,
+        shareFile = {}
     )
 }

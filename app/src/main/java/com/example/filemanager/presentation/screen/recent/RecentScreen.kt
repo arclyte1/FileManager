@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.filemanager.R
+import com.example.filemanager.presentation.shared.element_details.BaseElementDetails
 import com.example.filemanager.presentation.shared.element_details.ElementDetails
 import com.example.filemanager.presentation.shared.element_list_item.ElementListItem
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RecentScreen(
     shareFile: (Uri) -> Unit,
+    openFile: (Uri) -> Unit,
     viewModel: RecentViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
@@ -74,7 +76,7 @@ fun RecentScreen(
                         element = file,
                         modifier = Modifier.combinedClickable(
                             onClick = {
-                                //TODO: open file
+                                openFile((elementDetails as BaseElementDetails.FileElementDetails).uri)
                             },
                             onLongClick = {
                                 scope.launch {

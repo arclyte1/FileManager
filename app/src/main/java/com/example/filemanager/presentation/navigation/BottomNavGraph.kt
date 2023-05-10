@@ -16,6 +16,7 @@ import com.example.filemanager.presentation.screen.recent.RecentScreen
 fun BottomNavGraph(
     navController: NavHostController,
     shareFile: (Uri) -> Unit,
+    openFile: (Uri) -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -25,12 +26,14 @@ fun BottomNavGraph(
     ) {
         composable(BottomNavItem.FileBrowser.screen_route) {
             FileBrowserScreen(
-                shareFile = shareFile
+                shareFile = shareFile,
+                openFile = openFile
             )
         }
         composable(BottomNavItem.Recent.screen_route) {
             RecentScreen(
-                shareFile = shareFile
+                shareFile = shareFile,
+                openFile = openFile
             )
         }
     }

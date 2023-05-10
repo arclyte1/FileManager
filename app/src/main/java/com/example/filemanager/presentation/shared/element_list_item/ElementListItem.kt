@@ -1,5 +1,6 @@
 package com.example.filemanager.presentation.shared.element_list_item
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -92,7 +93,8 @@ fun ElementListItemPreview() {
                 R.drawable.base_file,
                 "Filename",
                 "20 февраля 2023 г.",
-                "34 MB"
+                "34 MB",
+                uri = Uri.EMPTY
             ),
             modifier = Modifier
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp)

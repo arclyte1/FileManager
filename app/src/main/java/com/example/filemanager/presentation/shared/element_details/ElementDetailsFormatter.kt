@@ -32,7 +32,6 @@ class ElementDetailsFormatter {
                 size = bytesToHumanReadableSize(element.size.toDouble())
             )
             is BaseElement.DirectoryElement -> BaseElementDetails.DirectoryElementDetails(
-                uri = element.uri,
                 path = basePathToAdd + element.path.removePrefix(basePathToRemove),
                 name = element.name,
                 dateModified = dateString,

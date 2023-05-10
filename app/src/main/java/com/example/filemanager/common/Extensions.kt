@@ -1,14 +1,17 @@
 package com.example.filemanager.common
 
+import android.net.Uri
 import androidx.core.net.toUri
 import com.example.filemanager.domain.model.BaseElement
 import java.io.File
 import java.util.*
 
-fun File.toBaseElement() : BaseElement {
+fun File.toBaseElement(
+    fileUriProvider: (File) -> Uri
+) : BaseElement {
     return if (isFile) {
         BaseElement.FileElement(
-            uri = toUri(),
+            uri = fileUriProvider(this),
             name = name,
             path = path,
             dateModified = Date(lastModified()),
@@ -17,7 +20,6 @@ fun File.toBaseElement() : BaseElement {
         )
     } else {
         BaseElement.DirectoryElement(
-            uri = toUri(),
             name = name,
             path = path,
             dateModified = Date(lastModified()),

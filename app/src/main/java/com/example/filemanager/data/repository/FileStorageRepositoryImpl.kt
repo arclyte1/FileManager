@@ -1,6 +1,6 @@
 package com.example.filemanager.data.repository
 
-import android.os.Environment
+import android.net.Uri
 import android.os.storage.StorageManager
 import android.util.Log
 import com.example.filemanager.common.Resource
@@ -17,9 +17,9 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
-import java.util.*
 
 class FileStorageRepositoryImpl(
+    private val fileUriProvider: (File) -> Uri,
     private val fileDb: FileDb,
     private val storageManager: StorageManager,
 ) : FileStorageRepository {
@@ -32,7 +32,7 @@ class FileStorageRepositoryImpl(
             val files = gatherUpdatedOrNewFiles(fileDb.fileDao().rowsCount() != 0)
             updatedOrNewFiles.emit(
                 Resource.Success(
-                    files.map { file -> file.toBaseElement() as BaseElement.FileElement }
+                    files.map { file -> file.toBaseElement(fileUriProvider) as BaseElement.FileElement }
                 )
             )
         }
@@ -108,7 +108,7 @@ class FileStorageRepositoryImpl(
     override fun getElements(path: String): List<BaseElement> {
         val file = File(path)
         return file.listFiles()?.map { f ->
-            f.toBaseElement()
+            f.toBaseElement(fileUriProvider)
         } ?: emptyList()
     }
 }

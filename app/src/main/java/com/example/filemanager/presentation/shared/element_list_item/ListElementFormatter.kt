@@ -25,7 +25,8 @@ class ListElementFormatter {
                 iconId = getFileIcon(element.extension),
                 name = element.name,
                 dateModified = dateString,
-                size = bytesToHumanReadableSize(element.size.toDouble())
+                size = bytesToHumanReadableSize(element.size.toDouble()),
+                uri = element.uri
             )
             is BaseElement.DirectoryElement -> BaseListElement.DirectoryListElement(
                 iconId = getDirectoryIcon(),

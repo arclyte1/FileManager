@@ -1,5 +1,7 @@
 package com.example.filemanager.presentation.shared.element_list_item
 
+import android.net.Uri
+
 
 sealed class BaseListElement(
     open val iconId: Int,
@@ -12,6 +14,7 @@ sealed class BaseListElement(
         override val name: String,
         override val dateModified: String,
         val size: String,
+        val uri: Uri,
     ) : BaseListElement(iconId, name, dateModified)
 
     data class DirectoryListElement(
