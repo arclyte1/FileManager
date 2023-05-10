@@ -126,30 +126,34 @@ class FileBrowserViewModel @Inject constructor(
     }
 
     private fun sortElementList() {
-        val sortingPredicate = { element: BaseElement ->
-            when (_sortBy.value) {
-                SortBy.NAME -> element.name
-                SortBy.DATE -> element.dateModified.time.toString()
-                SortBy.SIZE -> {
-                    when (element) {
-                        is BaseElement.FileElement -> element.size.toString()
-                        is BaseElement.DirectoryElement -> element.elementsCount.toString()
+        _listElements.value = when(sortBy.value) {
+            SortBy.NAME -> {
+                _listElements.value.sortedBy { it.name }
+            }
+            SortBy.SIZE -> {
+                _listElements.value.sortedBy {
+                    when (it) {
+                        is BaseElement.FileElement -> it.size
+                        is BaseElement.DirectoryElement -> it.elementsCount.toLong()
                     }
                 }
-                SortBy.EXTENSION -> {
-                    when (element) {
-                        is BaseElement.FileElement -> element.extension
-                        is BaseElement.DirectoryElement -> element.name
+            }
+            SortBy.DATE -> {
+                _listElements.value.sortedBy { it.dateModified }
+            }
+            SortBy.EXTENSION -> {
+                _listElements.value.sortedBy {
+                    when (it) {
+                        is BaseElement.FileElement -> it.extension
+                        is BaseElement.DirectoryElement -> it.name
                     }
                 }
             }
         }
 
-        _listElements.value = if (_sortingOrder.value == SortingOrder.ASC) {
-            _listElements.value.sortedBy(sortingPredicate)
-        } else {
-            _listElements.value.sortedByDescending(sortingPredicate)
-        }
+        if (_sortingOrder.value == SortingOrder.DESC)
+            _listElements.value = _listElements.value.asReversed()
+
         _listElements.value = _listElements.value.sortedBy { it is BaseElement.FileElement }
     }
 
