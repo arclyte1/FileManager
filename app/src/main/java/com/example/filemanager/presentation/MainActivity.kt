@@ -6,58 +6,54 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.os.Environment
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.filemanager.BuildConfig
 import com.example.filemanager.presentation.ui.theme.FileManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private var permissionGranted = MutableStateFlow(false)
+    private var permissionsGranted = MutableStateFlow(false)
 
     val permissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        permissionGranted.value = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: false
-
-        if(permissionGranted.value) {
-            // TODO
-        } else {
-            Toast.makeText(this, "Can't read files without permission.", Toast.LENGTH_LONG).show()
-        }
+        val hasReadPermission = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: false
+        permissionsGranted.value = hasReadPermission
     }
 
     private fun updateOrRequestPermissions() {
-        val hasReadPermission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-        val hasWritePermission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-        val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            val hasReadPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
 
-        permissionGranted.value = hasReadPermission && hasWritePermission || minSdk29
+            permissionsGranted.value = hasReadPermission
 
-
-        val permissionsToRequest = mutableListOf<String>()
-        if(!hasReadPermission) {
-            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-        if (!(hasWritePermission || minSdk29)) {
-            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-        if(permissionsToRequest.isNotEmpty()) {
-            permissionsLauncher.launch(permissionsToRequest.toTypedArray())
+            val permissionsToRequest = mutableListOf<String>()
+            if (!hasReadPermission) {
+                permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            if (permissionsToRequest.isNotEmpty()) {
+                permissionsLauncher.launch(permissionsToRequest.toTypedArray())
+            }
+        } else {
+            // User will press button to grant permissions in settings
+            permissionsGranted.value = Environment.isExternalStorageManager()
         }
     }
 
@@ -66,14 +62,28 @@ class MainActivity : ComponentActivity() {
 
         updateOrRequestPermissions()
 
+        if (!permissionsGranted.value)
+            lifecycleScope.launchWhenStarted {
+                while(!permissionsGranted.value) {
+                    val hasReadPermission = ContextCompat.checkSelfPermission(
+                        this@MainActivity,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                    permissionsGranted.value = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                        Environment.isExternalStorageManager() else hasReadPermission
+                    delay(500L)
+                }
+            }
+
         setContent {
-            val permissionsGranted by permissionGranted.collectAsState()
+            val permissionsGranted by permissionsGranted.collectAsState()
             FileManagerTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     AppHost(
                         permissionsGranted = permissionsGranted,
                         shareFile = ::shareFile,
-                        openFile = ::openFile
+                        openFile = ::openFile,
+                        openSettingsForManageAllFilesPermission = ::openSettingsForManageAllFilesPermission
                     )
                 }
             }
@@ -93,8 +103,20 @@ class MainActivity : ComponentActivity() {
         val intent = Intent().apply {
             action = Intent.ACTION_VIEW
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            type = contentResolver.getType(uri)
+            setDataAndType(uri, contentResolver.getType(uri))
         }
         startActivity(intent)
+    }
+
+    private fun openSettingsForManageAllFilesPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                    uri
+                )
+            )
+        }
     }
 }

@@ -14,7 +14,8 @@ import com.example.filemanager.presentation.screen.no_permissions.NoPermissionsS
 fun AppHost(
     permissionsGranted: Boolean,
     shareFile: (Uri) -> Unit,
-    openFile: (Uri) -> Unit
+    openFile: (Uri) -> Unit,
+    openSettingsForManageAllFilesPermission: () -> Unit
 ) {
     if (permissionsGranted) {
         val navController = rememberNavController()
@@ -29,6 +30,8 @@ fun AppHost(
             )
         }
     } else {
-        NoPermissionsScreen()
+        NoPermissionsScreen(
+            openSettingsForManageAllFilesPermission
+        )
     }
 }
