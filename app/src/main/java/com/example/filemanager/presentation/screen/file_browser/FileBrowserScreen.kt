@@ -46,6 +46,7 @@ fun FileBrowserScreen(
     val elementDetails by viewModel.elementDetails.collectAsState()
     val volumesList by viewModel.formattedVolumesList.collectAsState()
     val selectedVolume by viewModel.selectedVolume.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(event) {
         if (event is FileBrowserViewModel.Event.UpdateScrollPosition) {
@@ -101,32 +102,41 @@ fun FileBrowserScreen(
                 )
             }
 
-            LazyColumn(state = listState) {
-                items(listItems) { element ->
-                    ElementListItem(element, modifier = Modifier
-                        .combinedClickable(
-                            onClick = {
-                                when (element) {
-                                    is BaseListElement.DirectoryListElement -> {
-                                        viewModel.navigateDirectory(
-                                            element.name,
-                                            listState.firstVisibleItemIndex,
-                                            listState.firstVisibleItemScrollOffset
-                                        )
+            if (isLoading) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn(state = listState) {
+                    items(listItems) { element ->
+                        ElementListItem(element, modifier = Modifier
+                            .combinedClickable(
+                                onClick = {
+                                    when (element) {
+                                        is BaseListElement.DirectoryListElement -> {
+                                            viewModel.navigateDirectory(
+                                                element.name,
+                                                listState.firstVisibleItemIndex,
+                                                listState.firstVisibleItemScrollOffset
+                                            )
+                                        }
+                                        is BaseListElement.FileListElement -> {
+                                            openFile(element.uri)
+                                        }
                                     }
-                                    is BaseListElement.FileListElement -> {
-                                        openFile(element.uri)
+                                },
+                                onLongClick = {
+                                    scope.launch {
+                                        viewModel.setElementDetails(element.name)
+                                        bottomSheetState.show()
                                     }
                                 }
-                            },
-                            onLongClick = {
-                                scope.launch {
-                                    viewModel.setElementDetails(element.name)
-                                    bottomSheetState.show()
-                                }
-                            }
-                        )
-                        .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp))
+                            )
+                            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp))
+                    }
                 }
             }
         }

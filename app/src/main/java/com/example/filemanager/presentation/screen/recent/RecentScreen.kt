@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -69,37 +70,46 @@ fun RecentScreen(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)
             )
-
-            LazyColumn {
-                items(fileList) { file ->
-                    ElementListItem(
-                        element = file,
-                        modifier = Modifier.combinedClickable(
-                            onClick = {
-                                openFile((elementDetails as BaseElementDetails.FileElementDetails).uri)
-                            },
-                            onLongClick = {
-                                scope.launch {
-                                    viewModel.setElementDetails(file.name)
-                                    bottomSheetState.show()
-                                }
-                            }
-                        ).padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)
-                    )
-                }
-            }
-
-            if (fileList.isEmpty()) {
+            if (isLoading) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.last_modified_files_will_appear),
-                        color = Color.DarkGray,
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(start = 32.dp, end = 32.dp)
-                    )
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn {
+                    items(fileList) { file ->
+                        ElementListItem(
+                            element = file,
+                            modifier = Modifier.combinedClickable(
+                                onClick = {
+                                    openFile((elementDetails as BaseElementDetails.FileElementDetails).uri)
+                                },
+                                onLongClick = {
+                                    scope.launch {
+                                        viewModel.setElementDetails(file.name)
+                                        bottomSheetState.show()
+                                    }
+                                }
+                            ).padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)
+                        )
+                    }
+                }
+
+                if (fileList.isEmpty()) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.last_modified_files_will_appear),
+                            color = Color.Gray,
+                            fontSize = 24.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(start = 32.dp, end = 32.dp)
+                        )
+                    }
                 }
             }
         }

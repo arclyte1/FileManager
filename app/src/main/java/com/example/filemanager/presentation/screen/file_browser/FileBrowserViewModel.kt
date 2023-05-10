@@ -66,6 +66,9 @@ class FileBrowserViewModel @Inject constructor(
 
     val event = MutableStateFlow<Event>(Event.Clean)
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     init {
         selectVolume(null)
     }
@@ -117,11 +120,13 @@ class FileBrowserViewModel @Inject constructor(
     private fun updateElementsList(
         updateScrollPositionEvent: Event.UpdateScrollPosition = Event.UpdateScrollPosition(0, 0)
     ) {
+        _isLoading.value = true
         viewModelScope.launch(Dispatchers.Default) {
             _listElements.value = getElementsUseCase(basePath + _path.value)
             sortElementList()
             _formattedListElements.value = _listElements.value.map { listElementFormatter.format(it) }
             event.value = updateScrollPositionEvent
+            _isLoading.value = false
         }
     }
 
